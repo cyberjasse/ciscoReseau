@@ -1,0 +1,32 @@
+R1>enable
+R1#sh int
+R1#conf t
+R1(config)#int Ethernet1/0
+R1(config-if)#ip address 192.168.101.1 255.255.255.240
+R1(config-if)#no shutdown
+R1(config-if)#exit
+R1(config)#int Ethernet0/0
+R1(config-if)#ip address 10.11.11.2 255.255.255.248
+R1(config-if)#no shutdown
+R1(config)#exit
+R1#sh int
+R1#conf t
+R1(config)#ip dhcp excluded-address 192.168.101.1 255.255.255.255
+R1(config)#ip dhcp pool g1dhcp
+R1(dhcp-config)#network 192.168.101.0 255.255.255.240
+R1(dhcp-config)#dns-server 192.168.101.1
+R1(dhcp-config)#default-router 192.168.101.1
+R1(dhcp-config)#lease 1 0 0
+R1(dhcp-config)#exit
+R1(config)#service dhcp
+R1(config)#exit
+R1#show ip dhcp server statistics
+R1#conf t
+R1(config)#ip host
+R1(config)#ip domain-lookup
+R1(config)#ip name-server 4.2.2.5
+R1(config)#router ospf 1
+R1(config-router)#network 192.168.101.0 0.0.0.15 area 1
+R1(config-router)#exit
+R1(config)#exit
+R1#sh ip route
