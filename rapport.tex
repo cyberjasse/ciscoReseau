@@ -13,7 +13,7 @@
 \section{Introduction}
 En suivant une certaine topologie (figure: \ref{fig:topo}),
 nous devions d'abord configurer le routeur qui nous était attribué pour que nous puissions envoyer des pings aux PC des autres membres de notre groupe,
-c'est à dire aux PC faisant partie de notre VLAN.
+c'est-à-dire aux PC faisant partie de notre VLAN.
 Ensuite, il fallait configurer notre routeur pour pouvoir envoyer des pings aux PC faisant partie d'autres VLAN.
 Notre groupe est le groupe 1.
 
@@ -24,33 +24,32 @@ Notre groupe est le groupe 1.
  \caption{Topologie à suivre pour ce travail pratique}
  \label{fig:topo}
 \end{figure}%
-Le réseau est composé de 9 VLAN ainsi que 9 routeurs qui sont connectés les uns aux autres (figure: \ref{fig:topo}). Nous avons le routeur R1 (Cisco modèle 2600)qui est connecté au routeur R4.
+Le réseau est composé de 9 VLAN ainsi que de 9 routeurs qui sont connectés les uns aux autres (figure: \ref{fig:topo}). Nous avons le routeur R1 (Cisco modèle 2600) qui est connecté au routeur R4.
 
 \section{Configuration}
 \subsection{Se connecter}
-Une fois connecté au \textit{Secure Console Server} du routeur R1 via l'Access Point sans-fil, Nous accèdons à l'invite de commande du routeur.
-La commande suivante nous permet de passer en mode privilégié.
+Une fois connecté au \textit{Secure Console Server} du routeur R1 via l'Access Point sans-fil, nous accédons à l'invite de commande du routeur.
+La commande suivante nous permet de passer en mode privilégié:
 \begin{verbatim}
 R1>enable
 \end{verbatim}
 Notre routeur a deux interfaces:
 \begin{itemize}
- \item \textbf{Interface 1/0:} Faisant partie du sous-réseaux contenant notre VLAN.
- \item \textbf{Interface 0/0:} Faisant partie du sous-réseaux contenant R1 et R4 et la connection Point-to-point entre eux.
+ \item \textbf{Interface 1/0:} Faisant partie du sous-réseau contenant notre VLAN.
+ \item \textbf{Interface 0/0:} Faisant partie du sous-réseau contenant R1 et R4 et la connexion Point-to-point entre eux.
 \end{itemize}
 
 \subsection{Configurer l'interface 1/0}
-L'étape suivante consiste donc à configurer l'interface 1/0.
+L'étape suivante consiste à configurer l'interface 1/0.
 Les IP des réseaux attribués aux groupes sont de la forme 192.168.10$X$.0 où $X$ est le numéro de groupe.
 Nous avons choisis d'attribuer à cet interface la plage d'IP correspondant à 192.168.101.0 avec le masque 255.255.255.240.
 
-\textbf{Jusification du masque:} Nous avons 3 PC à connecter à notre VLAN et de plus, il y a 4 ports à notre switch donc nous ne pouvons pas connecter plus de 3 PC à notre routeur.
-Nous avons donc besoin d'attribuer une adresse IP de sous-réseaux à 4 noeuds.
-Mais l'adresse IP où tous les bits de l'adresse du sous-réseaux sont à 0 est reservée et aussi celle où tous les bits de l'adresse de sous-réseaux est à 1 pour pouvoir effectuer un broadcast.
-La plage d'IP doit donc pouvoir contenir 6 adresses et donc le nombre de bits minimum à reserver pour les adresses de sous-réseau est de 3.
+\textbf{Jusification du masque:}Nous disposons d'un switch à 4 ports donc nous ne pouvons pas connecter directement plus de 3 PC au routeur.
+Nous avons donc besoin d'attribuer une plage d'adresses IP de sous-réseaux à 4 noeuds.
+La première (réseau) et la dernière (broadcast) adresses étant réservées, la plage d'IP doit pouvoir contenir au moins 6 adresses et donc le nombre de bits minimum à réserver pour les adresses de sous-réseau est de 3 pour avoir une plage de 8 adresses.
 Ce qui correspond à un masque de /29.
-Mais comme ce masque ne semble pas être accepté par le routeur Cisco, nous avons mis un masque de /28 et là le masque est accepté.
-Pour obtenir le masque dans la notation complète, on utilise la notation d'une adresse IP où tous les bits sont à 1 sauf les bits à réserver pour l'adressage du sous-réseaux, qui doivent être les bits de poids le plus faible.
+Mais, comme ce masque ne semble pas être accepté par le routeur Cisco, nous avons mis un masque de /28 qui est accepté.
+Pour obtenir le masque dans la notation complète, on utilise la notation d'une adresse IP où tous les bits sont à 1 sauf les bits à réserver pour l'adressage du sous-réseau, qui doivent être les bits de poids le plus faible.
 \begin{verbatim}
 R1#conf t
 R1(config)#int Ethernet1/0
@@ -63,8 +62,8 @@ R1#sh int
 Depuis un PC connecté manuellement à notre VLAN, un ping a été envoyé au routeur avec succès.
 
 \subsection{Service DHCP}
-Ensuite nous avons tenté de configurer un serveur DHCP dans le routeur pour notre VLAN.
-Remarquez dans notre historique que nous avons exclu l'adresse 192.168.101.1 pour ne pas qu'il soit attribué automatiquement à un de nos PC.
+Ensuite, nous avons tenté de configurer un serveur DHCP dans le routeur pour notre VLAN.
+Remarquez dans notre historique de commande que nous avons exclu l'adresse 192.168.101.1 pour ne pas qu'elle soit attribuée automatiquement à un de nos PC.
 En effet, nous voulons réserver cette adresse pour l'interface du routeur de notre VLAN.
 \begin{verbatim}
 R1(config)#ip dhcp excluded-address 192.168.101.1 255.255.255.255
@@ -78,10 +77,10 @@ R1(config)#service dhcp
 R1(config)#exit
 R1#show ip dhcp server statistics
 \end{verbatim}
-Le service ne semblait pas opérationnel et la commande affichant les informations sur les adresses IP qui peuvent être attribuées automatiquement ne semble pas fonctionner ou est différente des documentations que nous avons consulté.
+Le service ne semblait pas opérationnel et la commande affichant les informations sur les adresses IP qui peuvent être attribuées automatiquement ne fonctionnait pas ou était différente des documentations que nous avions consulté.
 
 \subsection{Service DNS}
-Maintenant au tour du service DNS
+Passons à la configuration du service DNS.
 \begin{verbatim}
 R1#conf t
 R1(config)#ip domain name groupe1.com
@@ -90,14 +89,13 @@ R1(config)#ip name-server 4.2.2.5
 R1(config)#ip host Corentin 192.168.101.3
 R1(config)#ip dns server
 \end{verbatim}
-%TODO pourquoi on s'était dit que ça marchait pas ? y a eu un message d'erreur où ?
+La dernière commande n'était pas reconnue. Il n'était donc pas possible d'activer le DNS.
 
 \subsection{Configurer l'interface 0/0}
 Cette fois, avec le groupe 4, nous nous sommes mis d'accord pour utiliser la plage d'adresse 10.11.11.0 avec le masque 255.255.255.248.
 
-Pour le masque, puisque nous avons juste deux routeurs dans ce sous-réseau, il nous faut 2 adresses IP à attribuer en plus des deux adresses qui seront d'office réservées.
-Nous aurons donc l'adresse 10.11.11.0 et 10.11.11.3 réservés et nous nous somme mis d'accord pour que le routeur R4 ait l'adresse 10.11.11.1.
-L'adresse restante est pour le routeur R1.
+Pour le masque, puisque nous avons juste 2 routeurs dans ce sous-réseau, il nous faut 2 adresses IP à attribuer en plus des deux adresses qui seront d'office réservées. Le masque /30 n'étant pas accepté par le routeur, nous avons mis un masque /29.
+L'adresse 10.11.11.0 et 10.11.11.7 seront donc réservées et nous avons décidé que le routeur R4 aurait l'adresse 10.11.11.1 et le routeur R1 l'adresse 10.11.11.2.
 \begin{verbatim}
 R1#conf t
 R1(config)#int Ethernet0/0
@@ -111,7 +109,7 @@ Depuis un PC de connecté à notre VLAN, nous avons pu envoyer un ping au routeu
 \section{Service OSPF}
 Afin d'obtenir les adresses IP des machines accessibles et connectés au routeur R4, nous avons utilisé le service OSPF.
 Dès que nous entrons la commande \texttt{router ospf 1}, le routeur doit recevoir des messages de protocoles OSPF venant du routeur R4.
-Le groupe 4 nous avait signalé que le service OSPF du routeur R4 a été configuré. Nous avons tenté de le configuré à notre tour.
+Le groupe 4 nous avait signalé que le service OSPF du routeur R4 était configuré. Nous avons tenté de le configurer à notre tour.
 \begin{verbatim}
 R1(config)#router ospf 1
 R1(config-router)#network 192.168.101.0 0.0.0.15 area 1
@@ -119,6 +117,6 @@ R1(config-router)#exit
 R1(config)#exit
 R1#sh ip route
 \end{verbatim}
-Mais nous observons qu'aucune nouvelle adresse IP a été découverte via le service OSPF.
+Nous observons qu'aucune nouvelle adresse IP n'a été découverte via le service OSPF.
 
 \end{document}
